@@ -463,6 +463,9 @@ app.get('/orders', async (req, res) => {
   return res.status(200).json(orders);
 });
 
+//TODO - See this and use this whereever required
+//https://mongoosejs.com/docs/populate.html#populate-virtuals
+
 app.listen(4000, () => console.log('Server listening on port 4000'));
 
 module.exports = app;
