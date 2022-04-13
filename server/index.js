@@ -20,7 +20,11 @@ const frontendUrl = "http://localhost:3000";
 
 const mongoDbUrl = "mongodb+srv://admin:passwordmongodb@cluster0.ssvve.mongodb.net/etsy?retryWrites=true&w=majority";
 const mongoose = require('mongoose');
-const { Member, Shop, Order, Product, Category } = require("./models");
+const Member = require("./models/Member");
+const Shop = require("./models/Shop");
+const Order = require("./models/Order");
+const Product = require("./models/Product");
+const Category = require("./models/Category");
 
 var options = {
   useNewUrlParser: true,
@@ -163,17 +167,17 @@ app.get('/shop/:shopId', async (req, res) => {
     return res.status(400).json({ error: "Invalid shop id specified" });
   }
 
-  // const totalSales = await sequelize.query('select sum(op.quantity) as total_sales from product p inner join order_product op on p.id = op.product_id where p.shop_id = :shop_id', {
-  //   replacements: { shop_id: shopId },
-  //   type: Sequelize.QueryTypes.SELECT
-  // });
-  // shop.setDataValue('total_sales', totalSales[0].total_sales);
+  let shopTotalSales = 0;
+  if (shop.products && shop.products.length > 0) {
+    shop.products.forEach(product => {
+      shopTotalSales = shopTotalSales + product.no_of_sales;
+    });
+  }
 
   const result = {
     shop: shop,
     is_owner: shop.owner === req.user.id,
-    //TODO - Change this
-    total_sales: 1
+    shop_total_sales: shopTotalSales
   }
   return res.status(200).json(result);
 });
@@ -256,23 +260,12 @@ app.get('/product/:productId', async (req, res) => {
     return res.status(400).json({ error: "Invalid product id specified" });
   }
 
-  // const totalSales = await sequelize.query('select sum(op.quantity) as total_sales from product p inner join order_product op on p.id = op.product_id where p.id = :product_id', {
-  //   replacements: { product_id: product.id },
-  //   type: Sequelize.QueryTypes.SELECT
-  // });
-  // product.setDataValue('shop_total_sales', totalSales[0].total_sales);
-
   const loggedInMember = await Member.findById(req.user.id).populate({
     path: 'favouriteProducts', match: { _id: { $eq: productId } }
   });
-
-  console.log(loggedInMember);
-
   const result = {
     product: product,
     is_favourited: loggedInMember.favouriteProducts.length !== 0,
-    //TODO - Need to change this
-    shop_total_sales: 1
   }
   return res.status(200).json(result);
 });
@@ -282,38 +275,36 @@ app.get('/products', async (req, res) => {
   return res.status(200).json(products);
 });
 
-//TODO - This is pending
 app.post('/products/filtered', async (req, res) => {
-  let sql = "select p.*, IFNULL(sum(op.quantity), 0) as total_sales from product p left join order_product op on p.id = op.product_id ";
-  let searchTextSql = "where p.name like :searchedText ";
-  let excludeOutOfStockSql = "and p.quantity_available > 0 "
-  let minPriceFilter = "and p.price >= :minPrice ";
-  let maxPriceFilter = "and p.price <= :maxPrice ";
-  let groupBySql = "group by p.id "
-  let sortBySql = "order by ";
-
-  let replacements = {};
-  sql = sql + searchTextSql;
-  replacements.searchedText = '%' + req.body.searchedText + '%';
+  let searchText = '.*' + req.body.searchedText + '.*';
+  let findConditions = {
+    name: {
+      $regex: searchText,
+      $options: 'i'
+    }
+  };
 
   if (req.body.excludeOutOfStockSql) {
-    sql = sql + excludeOutOfStockSql;
+    findConditions.quantity_available = {
+      $gt: 0
+    };
   }
   if (req.body.minPrice) {
-    sql = sql + minPriceFilter;
-    replacements.minPrice = req.body.minPrice;
+    findConditions.price = {
+      $gte: req.body.minPrice
+    }
   }
   if (req.body.maxPrice) {
-    sql = sql + maxPriceFilter;
-    replacements.maxPrice = req.body.maxPrice;
+    if (findConditions.price) {
+      findConditions.price.$lte = req.body.maxPrice
+    } else {
+      findConditions.price = {
+        $lte: req.body.maxPrice
+      }
+    }
   }
-  sql = sql + groupBySql;
-  sql = sql + sortBySql + req.body.sortBy;
 
-  // const filteredProducts = await sequelize.query(sql, {
-  //   replacements: replacements,
-  //   type: Sequelize.QueryTypes.SELECT
-  // });
+  const filteredProducts = await Product.find(findConditions).sort(req.body.sortBy);
   return res.status(200).json(filteredProducts);
 });
 
@@ -444,8 +435,13 @@ app.post('/order', async (req, res) => {
       quantity: cartInfo.quantity,
       price: cartInfo.product.price
     });
-    //Changing the available quantity for the products
-    await Product.findByIdAndUpdate({ _id: cartInfo.product.id }, { quantity_available: cartInfo.product.quantity_available - cartInfo.quantity });
+    //Changing the available quantity and no_of_sales for the products
+    await Product.findByIdAndUpdate({ _id: cartInfo.product.id }, {
+      quantity_available: cartInfo.product.quantity_available - cartInfo.quantity,
+      $inc: {
+        no_of_sales: cartInfo.quantity
+      }
+    });
   });
   await newOrder.save();
 
@@ -462,9 +458,6 @@ app.get('/orders', async (req, res) => {
   });
   return res.status(200).json(orders);
 });
-
-//TODO - See this and use this whereever required
-//https://mongoosejs.com/docs/populate.html#populate-virtuals
 
 app.listen(4000, () => console.log('Server listening on port 4000'));
 

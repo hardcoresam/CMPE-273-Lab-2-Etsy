@@ -15,6 +15,7 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    no_of_sales: Number,
     shop: { type: mongoose.Schema.Types.ObjectId, ref: 'Shop' },
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' }
 }, {

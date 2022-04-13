@@ -68,12 +68,12 @@ export default function Search(props) {
                 <Col sm={3}>
                     <div style={{ marginRight: "4%" }}>
                         <Form.Select name="sortBy" onChange={(e) => setSortBy(e.target.value)}>
-                            <option value="p.price">Sort by: Lowest Price</option>
-                            <option value="p.price desc">Sort by: Highest Price</option>
-                            <option value="p.quantity_available">Sort by: Lowest Quantity</option>
-                            <option value="p.quantity_available desc">Sort by: Highest Quantity</option>
-                            <option value="total_sales">Sort by: Lowest Sales Count</option>
-                            <option value="total_sales desc">Sort by: Highest Sales Count</option>
+                            <option value="price">Sort by: Lowest Price</option>
+                            <option value="-price">Sort by: Highest Price</option>
+                            <option value="quantity_available">Sort by: Lowest Quantity</option>
+                            <option value="-quantity_available">Sort by: Highest Quantity</option>
+                            <option value="no_of_sales">Sort by: Lowest Sales Count</option>
+                            <option value="-no_of_sales">Sort by: Highest Sales Count</option>
                         </Form.Select>
                     </div>
                 </Col>
