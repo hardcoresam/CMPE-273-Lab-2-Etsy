@@ -9,7 +9,7 @@ export default function Search(props) {
     const [searchedText, setSearchedText] = useState();
     const [searchForm, setSearchForm] = useState({ minPrice: '', maxPrice: '' });
     const [excludeOutOfStock, setExcludeOutOfStock] = useState(false);
-    const [sortBy, setSortBy] = useState('p.price');
+    const [sortBy, setSortBy] = useState('price');
     const [priceFilterClicked, setPriceFilterClicked] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
     const [productsGrid, setProductsGrid] = useState([]);

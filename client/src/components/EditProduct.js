@@ -65,12 +65,12 @@ export default function EditProduct({ showModal, setShowModal, productId }) {
         const { data: productData } = await axios.get(backendServer + `/product/${productId}`);
         setEditProductForm(prevState => {
             let editProductForm = { ...prevState };
-            editProductForm.name = productData.name;
-            editProductForm.photo = productData.photo;
-            editProductForm.category = productData.category_id;
-            editProductForm.description = productData.description || '';
-            editProductForm.price = productData.price;
-            editProductForm.quantityAvailable = productData.quantity_available;
+            editProductForm.name = productData.product.name;
+            editProductForm.photo = productData.product.photo;
+            editProductForm.category = productData.product.category.id;
+            editProductForm.description = productData.product.description || '';
+            editProductForm.price = productData.product.price;
+            editProductForm.quantityAvailable = productData.product.quantity_available;
             return editProductForm;
         });
     }, []);

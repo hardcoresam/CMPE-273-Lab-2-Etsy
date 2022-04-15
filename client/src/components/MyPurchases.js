@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Button, Row, Col, Image, Card } from 'react-bootstrap';
+import { Row, Col, Image, Card } from 'react-bootstrap';
 import defaultShopImage from './../images/default_shop_image.png';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -21,8 +21,8 @@ export default function MyPurchases(props) {
 
     const calculateOrderTotal = (order) => {
         let total = 0;
-        order.Products.map((product) => {
-            total = total + (product.OrderProduct.price * product.OrderProduct.quantity);
+        order.ordered_products.map((ordered_product) => {
+            total = total + (ordered_product.price * ordered_product.quantity);
         })
         return total;
     }
@@ -42,24 +42,24 @@ export default function MyPurchases(props) {
                     {ordersInfo.map((order) => (
                         <Card style={{ marginLeft: "5%", marginRight: "5%", marginTop: 15, marginBottom: 15 }}>
                             <Card.Body>
-                                <Card.Title>Order ID: {order.id} placed on {order.time}, {order.date} totalling {currencySymbol}{calculateOrderTotal(order)}.</Card.Title>
+                                <Card.Title>Order ID: {order.id} placed on {order.placed_on} totalling {currencySymbol}{calculateOrderTotal(order)}.</Card.Title>
                             </Card.Body>
-                            {order.Products.map((product) => (
+                            {order.ordered_products.map((ordered_product) => (
                                 <Card.Body>
                                     <Row>
                                         <Col sm={3}>
-                                            <Image rounded width={190} height={170} src={product.photo ? product.photo : defaultShopImage} />
+                                            <Image rounded width={190} height={170} src={ordered_product.product.photo ? ordered_product.product.photo : defaultShopImage} />
                                         </Col>
                                         <Col sm={9}>
-                                            <Row><h3>Name: {product.name}</h3></Row>
-                                            <Row><h6>Shop : <Link to={'/shop/' + product.Shop.id}>{product.Shop.name}</Link></h6></Row>
-                                            <Row><h5>Price per unit: {currencySymbol}{product.OrderProduct.price}</h5></Row>
-                                            <Row><h5>Quantity: {product.OrderProduct.quantity}</h5></Row>
-                                            {product.OrderProduct.gift_packing && (
+                                            <Row><h3>Name: {ordered_product.product.name}</h3></Row>
+                                            <Row><h6>Shop : <Link to={'/shop/' + ordered_product.product.shop.id}>{ordered_product.product.shop.name}</Link></h6></Row>
+                                            <Row><h5>Price per unit: {currencySymbol}{ordered_product.price}</h5></Row>
+                                            <Row><h5>Quantity: {ordered_product.quantity}</h5></Row>
+                                            {ordered_product.gift_packing && (
                                                 <Row><h5>This item is ordered as a gift product</h5></Row>
                                             )}
-                                            <Row><h5>Note to seller: {product.OrderProduct.note_to_seller}</h5></Row>
-                                            <Row><h5>Total: {currencySymbol}{product.OrderProduct.price} * {product.OrderProduct.quantity} = {currencySymbol}{product.OrderProduct.price * product.OrderProduct.quantity}</h5></Row>
+                                            <Row><h5>Note to seller: {ordered_product.note_to_seller}</h5></Row>
+                                            <Row><h5>Total: {currencySymbol}{ordered_product.price} * {ordered_product.quantity} = {currencySymbol}{ordered_product.price * ordered_product.quantity}</h5></Row>
                                         </Col>
                                     </Row>
                                 </Card.Body>

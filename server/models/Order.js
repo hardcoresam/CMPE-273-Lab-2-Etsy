@@ -4,7 +4,8 @@ const orderSchema = new mongoose.Schema({
     placed_on: {
         type: Date,
         required: true,
-        default: Date.now
+        default: Date.now,
+        get: (placed_on) => placed_on.toLocaleString('en-GB', { timeZone: 'UTC' })
     },
     member: { type: mongoose.Schema.Types.ObjectId, ref: 'Member' },
     ordered_products: [{

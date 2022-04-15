@@ -32,11 +32,11 @@ export default function EditShopImageModal({ showModal, setShowModal, shopData, 
         }
         axios.defaults.withCredentials = true;
         let s3PhotoUrl = await uploadToS3(shopImage);
-        const response = await axios.post(backendServer + '/shop/image', { shopId: shopData.id, shopImage: s3PhotoUrl });
+        const response = await axios.post(backendServer + '/shop/image', { shopId: shopData.shop.id, shopImage: s3PhotoUrl });
         if (response.status === 200) {
             toast.success('Shop Image edited successfully!', { position: "top-center" });
             setShowModal(false);
-            setShopData({ ...shopData, photo: s3PhotoUrl });
+            setShopData({ ...shopData, 'shop.photo': s3PhotoUrl });
         } else {
             toast.error('Failed to upload shop image. Please try later!', { position: "top-center" });
         }

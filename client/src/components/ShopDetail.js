@@ -25,8 +25,8 @@ export default function ShopDetail(props) {
         const { data: shopData } = await axios.get(backendServer + `/shop/${shopId}`);
         setShopData(shopData);
         let gridOfProducts = [];
-        for (let i = 0; i < shopData.Products.length; i = i + 4) {
-            gridOfProducts.push(shopData.Products.slice(i, i + 4));
+        for (let i = 0; i < shopData.products.length; i = i + 4) {
+            gridOfProducts.push(shopData.products.slice(i, i + 4));
         }
         setProductsGrid(gridOfProducts);
     }, []);
@@ -39,11 +39,11 @@ export default function ShopDetail(props) {
                         <Card.Body>
                             <Row>
                                 <Col sm={2}>
-                                    <Image rounded width={150} height={160} src={shopData.photo ? shopData.photo : defaultShopImage} />
+                                    <Image rounded width={150} height={160} src={shopData.shop.photo ? shopData.shop.photo : defaultShopImage} />
                                 </Col>
                                 <Col sm={4}>
-                                    <Row><h3>{shopData.name}</h3></Row>
-                                    <Row><h6 style={{ fontWeight: "lighter" }}>{shopData.total_sales} sales | On Etsy since {shopData.created_on}</h6></Row>
+                                    <Row><h3>{shopData.shop.name}</h3></Row>
+                                    <Row><h6 style={{ fontWeight: "lighter" }}>{shopData.shop_total_sales} sales | On Etsy since {shopData.shop.created_on}</h6></Row>
                                     {shopData.is_owner && (
                                         <>
                                             <Row>
@@ -59,9 +59,9 @@ export default function ShopDetail(props) {
                                 <Col sm={4}></Col>
                                 <Col sm={2}>
                                     <Row><h5>Shop Owner</h5></Row>
-                                    <Image roundedCircle width={90} height={90} src={shopData.Member.photo ? shopData.Member.photo : defaultProfilePhoto} />
-                                    <Row><span>{shopData.Member.first_name}</span></Row>
-                                    <Row><span>Ph No: {shopData.Member.phone_number}</span></Row>
+                                    <Image roundedCircle width={90} height={90} src={shopData.shop.owner.photo ? shopData.shop.owner.photo : defaultProfilePhoto} />
+                                    <Row><span>{shopData.shop.owner.first_name}</span></Row>
+                                    <Row><span>Ph No: {shopData.shop.owner.phone_number}</span></Row>
                                 </Col>
                             </Row>
                         </Card.Body>
@@ -70,7 +70,7 @@ export default function ShopDetail(props) {
                     <ProductList productsGrid={productsGrid} showEditButton={shopData.is_owner} />
 
                     {showAddProductModal && (
-                        <AddProduct showModal={showAddProductModal} setShowModal={setShowAddProductModal} shopId={shopData.id} />
+                        <AddProduct showModal={showAddProductModal} setShowModal={setShowAddProductModal} shopId={shopData.shop.id} />
                     )}
 
                     {showAddCategoryModal && (

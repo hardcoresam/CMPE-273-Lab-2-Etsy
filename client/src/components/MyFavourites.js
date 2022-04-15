@@ -16,10 +16,13 @@ export default function MyFavourites(props) {
     useEffect(async () => {
         axios.defaults.withCredentials = true;
         const { data } = await axios.get(backendServer + '/favourites-of-member');
-        setMemberInfo(data.memberInfo);
+        setMemberInfo({
+            photo: data.photo,
+            userName: data.first_name
+        });
         let setOfProducts = [];
-        data.favourites.map((favourite) => {
-            setOfProducts.push(favourite.Product);
+        data.favouriteProducts.map((favourite) => {
+            setOfProducts.push(favourite);
         });
         setProductsList(setOfProducts);
         let gridOfProducts = [];

@@ -6,6 +6,10 @@ const categorySchema = new mongoose.Schema({
         required: true,
         unique: true
     }
-}, { timestamps: true });
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+    timestamps: true
+});
 
 module.exports = mongoose.model("Category", categorySchema);

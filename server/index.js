@@ -17,7 +17,7 @@ const Validation = require('./validations/Validation');
 const { validationResult } = require('express-validator');
 let passport = require("passport");
 require('./config/passport')(passport)
-let checkAuth = passport.authenticate("jwt", { session: false });
+//let checkAuth = passport.authenticate("jwt", { session: false });
 
 const frontendUrl = "http://localhost:3000";
 
@@ -66,25 +66,32 @@ app.use((req, res, next) => {
   next();
 });
 
-// const checkAccessToken = (req, res, next) => {
-//   if (req.url.includes('/auth/')) {
-//     next();
-//     return;
-//   }
-//   if (!req.cookies['access-token']) {
-//     return res.status(500).json({ message: 'Unauthorized request sent' });
-//   }
-//   try {
-//     const decoded = jwt.verify(req.cookies['access-token'], process.env.JWT_SECRET_KEY);
-//     req.user = decoded.user;
-//     next();
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: 'Unauthorized request sent' });
-//   }
-// }
+const checkAuth = (req, res, next) => {
+  next();
+  return;
+}
+const checkAccessToken = (req, res, next) => {
+  req.user = { id: '624f3fa0ea8c4261ac537c07' };
+  next();
+  return;
+  // if (req.url.includes('/auth/')) {
+  //   next();
+  //   return;
+  // }
+  // if (!req.cookies['access-token']) {
+  //   return res.status(500).json({ message: 'Unauthorized request sent' });
+  // }
+  // try {
+  //   const decoded = jwt.verify(req.cookies['access-token'], process.env.JWT_SECRET_KEY);
+  //   req.user = decoded.user;
+  //   next();
+  // } catch (error) {
+  //   console.error(error);
+  //   return res.status(500).json({ message: 'Unauthorized request sent' });
+  // }
+}
 
-//app.use(checkAccessToken);
+app.use(checkAccessToken);
 
 app.post('/auth/login', Validation.loginValidation(), async (req, res) => {
   const errors = validationResult(req);
@@ -179,7 +186,7 @@ app.get('/shop/:shopId', checkAuth, async (req, res) => {
 
   const result = {
     shop: shop,
-    is_owner: shop.owner === req.user.id,
+    is_owner: shop.owner.equals(req.user.id),
     shop_total_sales: shopTotalSales
   }
   return res.status(200).json(result);
@@ -401,6 +408,7 @@ app.post('/cart/remove', checkAuth, async (req, res) => {
 });
 
 app.post('/cart/modify', checkAuth, async (req, res) => {
+  //TODO - Figure out why the below variable is not being used.
   let updateType = 'cart.$.' + req.body.updateType;
   const updatedCartInfo = await Member.select('cart').findOneAndUpdate({
     _id: req.user.id,

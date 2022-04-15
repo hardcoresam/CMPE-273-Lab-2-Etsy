@@ -19,7 +19,7 @@ export default function ProductDetail(props) {
     useEffect(async () => {
         axios.defaults.withCredentials = true;
         const { data: productData } = await axios.get(backendServer + `/product/${productId}`);
-        setProductData(productData);
+        setProductData(productData.product);
         setIsFavourited(productData.is_favourited);
         const userCurrency = window.localStorage.getItem("user_currency");
         if (userCurrency) {
@@ -58,8 +58,8 @@ export default function ProductDetail(props) {
                     </Col>
                     <Col sm={6}>
                         <Row>
-                            <Link to={'/shop/' + productData.Shop.id}>{productData.Shop.name}</Link>
-                            <h6 style={{ fontWeight: "lighter" }}>{productData.shop_total_sales ? productData.shop_total_sales : 0} sales</h6>
+                            <Link to={'/shop/' + productData.shop.id}>{productData.shop.name}</Link>
+                            <h6 style={{ fontWeight: "lighter" }}>{productData.no_of_sales ? productData.no_of_sales : 0} sales</h6>
                         </Row>
                         <Row><h3>{productData.name}</h3></Row>
                         <Row><h4>{currencySymbol}{productData.price}</h4></Row>

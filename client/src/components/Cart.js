@@ -39,8 +39,8 @@ export default function Cart(props) {
 
     const calculateTotal = () => {
         let total = 0;
-        cartData.Products.map((product) => {
-            total = total + (product.price * product.CartProduct.quantity);
+        cartData.cart.map((productInfo) => {
+            total = total + (productInfo.product.price * productInfo.quantity);
         })
         return total;
     }
@@ -84,49 +84,49 @@ export default function Cart(props) {
 
     return (
         <Fragment>
-            {(!cartData || cartData.Products.length === 0) && (
+            {(!cartData || cartData.cart.length === 0) && (
                 <div style={{ marginLeft: "15%", marginRight: "15%", marginTop: "10%", textAlign: 'center' }}>
                     <h2>Your cart is empty.</h2>
                     <h4 style={{ fontWeight: "lighter" }}><a href="/home">Discover something unique to fill it up.</a></h4>
                 </div>
             )}
-            {cartData && cartData.Products.length > 0 && (
+            {cartData && cartData.cart.length > 0 && (
                 <>
-                    <h2 style={{ marginTop: "1%", textAlign: 'center' }}>{cartData.Products.length} item(s) in your cart</h2>
+                    <h2 style={{ marginTop: "1%", textAlign: 'center' }}>{cartData.cart.length} item(s) in your cart</h2>
                     <Row style={{ marginLeft: "2%", marginRight: "2%", marginTop: 15 }}>
                         <Col sm={9}>
                             <Card>
-                                {cartData.Products.map((product) => (
+                                {cartData.cart.map((productInfo) => (
                                     <Card.Body>
                                         <Row>
                                             <Col sm={3}>
-                                                <Image rounded width={200} height={200} src={product.photo ? product.photo : defaultShopImage} />
+                                                <Image rounded width={200} height={200} src={productInfo.product.photo ? productInfo.product.photo : defaultShopImage} />
                                             </Col>
                                             <Col sm={9}>
-                                                <Row><h3>Name: {product.name}</h3></Row>
-                                                <Row><h6>Shop : <Link to={'/shop/' + product.Shop.id}>{product.Shop.name}</Link></h6></Row>
-                                                <Row><h5>Price per unit: {currencySymbol}{product.price}</h5></Row>
+                                                <Row><h3>Name: {productInfo.product.name}</h3></Row>
+                                                <Row><h6>Shop : <Link to={'/shop/' + productInfo.product.shop.id}>{productInfo.product.shop.name}</Link></h6></Row>
+                                                <Row><h5>Price per unit: {currencySymbol}{productInfo.product.price}</h5></Row>
                                                 <Row><h5>
                                                     Quantity:
-                                                    <Form.Select name="quantity" value={product.CartProduct.quantity} onChange={(e) => modifyCart('quantity', e.target.value, product)}>
-                                                        {[...Array(product.quantity_available + 1).keys()].slice(1).map((number) => (
+                                                    <Form.Select name="quantity" value={productInfo.quantity} onChange={(e) => modifyCart('quantity', e.target.value, productInfo.product)}>
+                                                        {[...Array(productInfo.product.quantity_available + 1).keys()].slice(1).map((number) => (
                                                             <option value={number} key={number}>{number}</option>
                                                         ))}
                                                     </Form.Select>
                                                 </h5></Row>
-                                                <Row><h5><Form.Check type="checkbox" name="giftPacking" label="This order is a gift" onClick={(e) => modifyCart('gift_packing', e.target.checked, product)} /></h5></Row>
+                                                <Row><h5><Form.Check type="checkbox" name="giftPacking" label="This order is a gift" onClick={(e) => modifyCart('gift_packing', e.target.checked, productInfo.product)} /></h5></Row>
 
                                                 <Row><h5>
-                                                    <Form className="d-flex" onSubmit={(e) => addNoteToSeller(e, product)}>
-                                                        <FormControl type="text" name="noteToSeller" onChange={(e) => setNoteToSeller(e.target.value, product)} placeholder="Add a note to seller" className="me-2" aria-label="Search" />
+                                                    <Form className="d-flex" onSubmit={(e) => addNoteToSeller(e, productInfo.product)}>
+                                                        <FormControl type="text" name="noteToSeller" onChange={(e) => setNoteToSeller(e.target.value, productInfo.product)} placeholder="Add a note to seller" className="me-2" aria-label="Search" />
                                                         <Button variant="outline-success" type="submit">Save</Button>
                                                     </Form>
                                                 </h5></Row>
 
 
-                                                <Row><h5>Total: {currencySymbol}{product.price} * {product.CartProduct.quantity} = {currencySymbol}{product.price * product.CartProduct.quantity}</h5></Row>
+                                                <Row><h5>Total: {currencySymbol}{productInfo.product.price} * {productInfo.quantity} = {currencySymbol}{productInfo.product.price * productInfo.quantity}</h5></Row>
                                                 <Row>
-                                                    <Button variant='warning' className='rounded-pill' onClick={(e) => removeFromCart(product)} style={{ width: "auto" }}>Remove from cart</Button>
+                                                    <Button variant='warning' className='rounded-pill' onClick={(e) => removeFromCart(productInfo.product)} style={{ width: "auto" }}>Remove from cart</Button>
                                                 </Row>
                                             </Col>
                                         </Row>
