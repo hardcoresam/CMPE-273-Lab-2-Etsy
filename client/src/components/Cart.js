@@ -10,6 +10,8 @@ export default function Cart(props) {
 
     const [cartData, setCartData] = useState();
     const [currencySymbol, setCurrencySymbol] = useState('$');
+    const [productsNoteToSeller, setProductsNoteToSeller] = useState({});
+
     const navigate = useNavigate();
 
     useEffect(async () => {
@@ -41,6 +43,28 @@ export default function Cart(props) {
             total = total + (product.price * product.CartProduct.quantity);
         })
         return total;
+    }
+
+    const setNoteToSeller = (noteToSeller, product) => {
+        setProductsNoteToSeller(prevState => {
+            let destructuredPrevState = { ...prevState };
+            destructuredPrevState[product.id] = noteToSeller;
+            return destructuredPrevState;
+        });
+    }
+
+    const addNoteToSeller = (event, product) => {
+        event.preventDefault();
+        let noteToSeller = productsNoteToSeller[product.id];
+        if (!noteToSeller) {
+            return;
+        }
+        modifyCart('note_to_seller', noteToSeller, product);
+    }
+
+    const modifyCart = async (modifiedType, modifiedValue, product) => {
+        axios.defaults.withCredentials = true;
+        await axios.post(backendServer + '/cart/modify', { productId: product.id, updateType: modifiedType, updateValue: modifiedValue });
     }
 
     const orderProducts = async (e) => {
@@ -82,7 +106,24 @@ export default function Cart(props) {
                                                 <Row><h3>Name: {product.name}</h3></Row>
                                                 <Row><h6>Shop : <Link to={'/shop/' + product.Shop.id}>{product.Shop.name}</Link></h6></Row>
                                                 <Row><h5>Price per unit: {currencySymbol}{product.price}</h5></Row>
-                                                <Row><h5>Quantity: {product.CartProduct.quantity}</h5></Row>
+                                                <Row><h5>
+                                                    Quantity:
+                                                    <Form.Select name="quantity" value={product.CartProduct.quantity} onChange={(e) => modifyCart('quantity', e.target.value, product)}>
+                                                        {[...Array(product.quantity_available + 1).keys()].slice(1).map((number) => (
+                                                            <option value={number} key={number}>{number}</option>
+                                                        ))}
+                                                    </Form.Select>
+                                                </h5></Row>
+                                                <Row><h5><Form.Check type="checkbox" name="giftPacking" label="This order is a gift" onClick={(e) => modifyCart('gift_packing', e.target.checked, product)} /></h5></Row>
+
+                                                <Row><h5>
+                                                    <Form className="d-flex" onSubmit={(e) => addNoteToSeller(e, product)}>
+                                                        <FormControl type="text" name="noteToSeller" onChange={(e) => setNoteToSeller(e.target.value, product)} placeholder="Add a note to seller" className="me-2" aria-label="Search" />
+                                                        <Button variant="outline-success" type="submit">Save</Button>
+                                                    </Form>
+                                                </h5></Row>
+
+
                                                 <Row><h5>Total: {currencySymbol}{product.price} * {product.CartProduct.quantity} = {currencySymbol}{product.price * product.CartProduct.quantity}</h5></Row>
                                                 <Row>
                                                     <Button variant='warning' className='rounded-pill' onClick={(e) => removeFromCart(product)} style={{ width: "auto" }}>Remove from cart</Button>

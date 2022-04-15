@@ -55,6 +55,10 @@ export default function MyPurchases(props) {
                                             <Row><h6>Shop : <Link to={'/shop/' + product.Shop.id}>{product.Shop.name}</Link></h6></Row>
                                             <Row><h5>Price per unit: {currencySymbol}{product.OrderProduct.price}</h5></Row>
                                             <Row><h5>Quantity: {product.OrderProduct.quantity}</h5></Row>
+                                            {product.OrderProduct.gift_packing && (
+                                                <Row><h5>This item is ordered as a gift product</h5></Row>
+                                            )}
+                                            <Row><h5>Note to seller: {product.OrderProduct.note_to_seller}</h5></Row>
                                             <Row><h5>Total: {currencySymbol}{product.OrderProduct.price} * {product.OrderProduct.quantity} = {currencySymbol}{product.OrderProduct.price * product.OrderProduct.quantity}</h5></Row>
                                         </Col>
                                     </Row>

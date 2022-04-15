@@ -15,6 +15,9 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Validation = require('./validations/Validation');
 const { validationResult } = require('express-validator');
+let passport = require("passport");
+require('./config/passport')(passport)
+let checkAuth = passport.authenticate("jwt", { session: false });
 
 const frontendUrl = "http://localhost:3000";
 
@@ -63,23 +66,23 @@ app.use((req, res, next) => {
   next();
 });
 
-const checkAccessToken = (req, res, next) => {
-  if (req.url.includes('/auth/')) {
-    next();
-    return;
-  }
-  if (!req.cookies['access-token']) {
-    return res.status(500).json({ message: 'Unauthorized request sent' });
-  }
-  try {
-    const decoded = jwt.verify(req.cookies['access-token'], process.env.JWT_SECRET_KEY);
-    req.user = decoded.user;
-    next();
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Unauthorized request sent' });
-  }
-}
+// const checkAccessToken = (req, res, next) => {
+//   if (req.url.includes('/auth/')) {
+//     next();
+//     return;
+//   }
+//   if (!req.cookies['access-token']) {
+//     return res.status(500).json({ message: 'Unauthorized request sent' });
+//   }
+//   try {
+//     const decoded = jwt.verify(req.cookies['access-token'], process.env.JWT_SECRET_KEY);
+//     req.user = decoded.user;
+//     next();
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ message: 'Unauthorized request sent' });
+//   }
+// }
 
 //app.use(checkAccessToken);
 
@@ -139,24 +142,24 @@ app.post('/auth/register', Validation.registrationValidation(), async (req, res)
   });
 });
 
-app.post('/category', async (req, res) => {
+app.post('/category', checkAuth, async (req, res) => {
   const category = await new Category({
     name: req.body.categoryName
   }).save();
   return res.status(200).json(category);
 });
 
-app.get('/categories', async (req, res) => {
+app.get('/categories', checkAuth, async (req, res) => {
   const categories = await Category.find({}).sort('_id');
   return res.status(200).json(categories);
 });
 
-app.get('/shop', async (req, res) => {
+app.get('/shop', checkAuth, async (req, res) => {
   const shop = await Shop.findOne({ owner: req.user.id });
   return res.status(200).json(shop);
 });
 
-app.get('/shop/:shopId', async (req, res) => {
+app.get('/shop/:shopId', checkAuth, async (req, res) => {
   const shopId = req.params.shopId;
   if (shopId.length !== 24) {
     return res.status(400).json({ error: "Invalid shop id specified" });
@@ -182,7 +185,7 @@ app.get('/shop/:shopId', async (req, res) => {
   return res.status(200).json(result);
 });
 
-app.post('/shop/available', Validation.checkShopNameValidation(), async (req, res) => {
+app.post('/shop/available', checkAuth, Validation.checkShopNameValidation(), async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.mapped() });
@@ -192,7 +195,7 @@ app.post('/shop/available', Validation.checkShopNameValidation(), async (req, re
   return res.status(200).json({ available: shop === null });
 });
 
-app.post('/shop', async (req, res) => {
+app.post('/shop', checkAuth, async (req, res) => {
   const newShop = await new Shop({
     name: req.body.shopName,
     owner: req.user.id
@@ -200,12 +203,12 @@ app.post('/shop', async (req, res) => {
   return res.status(200).json({ newShopId: newShop.id });
 });
 
-app.post('/shop/image', async (req, res) => {
+app.post('/shop/image', checkAuth, async (req, res) => {
   await Shop.findByIdAndUpdate({ _id: req.body.shopId }, { photo: req.body.shopImage });
   return res.status(200).json({ message: 'Shop Image edited successfully' });
 });
 
-app.post('/product', Validation.addProductValidation(), async (req, res) => {
+app.post('/product', checkAuth, Validation.addProductValidation(), async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.mapped() });
@@ -223,7 +226,7 @@ app.post('/product', Validation.addProductValidation(), async (req, res) => {
   return res.status(200).json(newProduct);
 });
 
-app.post('/product/:productId', Validation.addProductValidation(), async (req, res) => {
+app.post('/product/:productId', checkAuth, Validation.addProductValidation(), async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.mapped() });
@@ -249,7 +252,7 @@ app.post('/product/:productId', Validation.addProductValidation(), async (req, r
   return res.status(200).json({ message: 'Product update successfull' });
 });
 
-app.get('/product/:productId', async (req, res) => {
+app.get('/product/:productId', checkAuth, async (req, res) => {
   const productId = req.params.productId;
   if (productId.length !== 24) {
     return res.status(400).json({ error: "Invalid product id specified" });
@@ -270,12 +273,12 @@ app.get('/product/:productId', async (req, res) => {
   return res.status(200).json(result);
 });
 
-app.get('/products', async (req, res) => {
+app.get('/products', checkAuth, async (req, res) => {
   const products = await Product.find({});
   return res.status(200).json(products);
 });
 
-app.post('/products/filtered', async (req, res) => {
+app.post('/products/filtered', checkAuth, async (req, res) => {
   let searchText = '.*' + req.body.searchedText + '.*';
   let findConditions = {
     name: {
@@ -308,12 +311,12 @@ app.post('/products/filtered', async (req, res) => {
   return res.status(200).json(filteredProducts);
 });
 
-app.get('/favourites', async (req, res) => {
+app.get('/favourites', checkAuth, async (req, res) => {
   const memberInfo = await Member.findById(req.user.id, 'favouriteProducts');
   return res.status(200).json(memberInfo.favouriteProducts);
 });
 
-app.post('/favourite', async (req, res) => {
+app.post('/favourite', checkAuth, async (req, res) => {
   let updatedMemberInfo;
   const memberInfo = await Member.findById(req.user.id, 'favouriteProducts');
 
@@ -328,22 +331,22 @@ app.post('/favourite', async (req, res) => {
   return res.status(200).json(updatedMemberInfo.favouriteProducts);
 });
 
-app.get('/favourites-of-member', async (req, res) => {
+app.get('/favourites-of-member', checkAuth, async (req, res) => {
   const favouritesInfo = await Member.findById(req.user.id, 'photo first_name favouriteProducts').populate('favouriteProducts');
   return res.status(200).json(favouritesInfo);
 });
 
-app.get('/member', async (req, res) => {
+app.get('/member', checkAuth, async (req, res) => {
   const member = await Member.findById(req.user.id, '-cart -favouriteProducts');
   return res.status(200).json(member);
 });
 
-app.post('/member/currency', async (req, res) => {
+app.post('/member/currency', checkAuth, async (req, res) => {
   await Member.findByIdAndUpdate({ _id: req.user.id }, { currency: req.body.currency });
   return res.status(200).json({ message: 'User currency details updated' });
 });
 
-app.post('/member', Validation.updateMemberValidation(), async (req, res) => {
+app.post('/member', checkAuth, Validation.updateMemberValidation(), async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.mapped() });
@@ -367,7 +370,7 @@ app.post('/member', Validation.updateMemberValidation(), async (req, res) => {
   return res.status(200).json(member);
 });
 
-app.post('/cart/add', async (req, res) => {
+app.post('/cart/add', checkAuth, async (req, res) => {
   const member = await Member.findById(req.user.id, 'cart');
   let cartProductInfo;
   for (const cartProduct of member.cart) {
@@ -387,7 +390,7 @@ app.post('/cart/add', async (req, res) => {
   return res.status(200).json({ message: "Modified cart successfully" });
 });
 
-app.post('/cart/remove', async (req, res) => {
+app.post('/cart/remove', checkAuth, async (req, res) => {
   await Member.updateOne({ _id: req.user.id }, { "$pull": { "cart": { "product": req.body.productId } } });
 
   const cartInfo = await Member.findById(req.user.id, 'cart').populate({
@@ -397,7 +400,23 @@ app.post('/cart/remove', async (req, res) => {
   return res.status(200).json(cartInfo);
 });
 
-app.get('/cart', async (req, res) => {
+app.post('/cart/modify', checkAuth, async (req, res) => {
+  let updateType = 'cart.$.' + req.body.updateType;
+  const updatedCartInfo = await Member.select('cart').findOneAndUpdate({
+    _id: req.user.id,
+    cart: { '$elemMatch': { product: req.body.productId } }
+  }, {
+    $set: { updateType: req.body.updateValue }
+  }, {
+    new: true
+  }).populate({
+    path: 'cart.product',
+    populate: 'shop'
+  });
+  return res.status(200).json(updatedCartInfo);
+});
+
+app.get('/cart', checkAuth, async (req, res) => {
   const cartInfo = await Member.findById(req.user.id, 'cart').populate({
     path: 'cart.product',
     populate: 'shop'
@@ -405,7 +424,7 @@ app.get('/cart', async (req, res) => {
   return res.status(200).json(cartInfo);
 });
 
-app.post('/order', async (req, res) => {
+app.post('/order', checkAuth, async (req, res) => {
   //Check if address is present for this user before placing order
   const member = await Member.findById(req.user.id, 'cart address').populate('cart.product');
   if (!member.address || !member.address.street_address) {
@@ -433,7 +452,9 @@ app.post('/order', async (req, res) => {
     newOrder.ordered_products.push({
       product: cartInfo.product.id,
       quantity: cartInfo.quantity,
-      price: cartInfo.product.price
+      price: cartInfo.product.price,
+      gift_packing: cartInfo.gift_packing,
+      note_to_seller: cartInfo.note_to_seller
     });
     //Changing the available quantity and no_of_sales for the products
     await Product.findByIdAndUpdate({ _id: cartInfo.product.id }, {
@@ -451,7 +472,7 @@ app.post('/order', async (req, res) => {
   return res.status(200).json({ message: "Order placed successfully" });
 });
 
-app.get('/orders', async (req, res) => {
+app.get('/orders', checkAuth, async (req, res) => {
   const orders = await Order.find({ member: req.user.id }).populate({
     path: 'ordered_products.product',
     populate: 'shop'

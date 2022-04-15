@@ -42,7 +42,9 @@ const memberSchema = new mongoose.Schema({
         quantity: {
             type: Number,
             required: true
-        }
+        },
+        gift_packing: Boolean,
+        note_to_seller: String
     }]
 }, {
     toJSON: { virtuals: true },

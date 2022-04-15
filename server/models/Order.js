@@ -16,7 +16,9 @@ const orderSchema = new mongoose.Schema({
         price: {
             type: Number,
             required: true
-        }
+        },
+        gift_packing: Boolean,
+        note_to_seller: String
     }]
 }, {
     toJSON: { virtuals: true, getters: true },
