@@ -64,7 +64,8 @@ export default function Cart(props) {
 
     const modifyCart = async (modifiedType, modifiedValue, product) => {
         axios.defaults.withCredentials = true;
-        await axios.post(backendServer + '/cart/modify', { productId: product.id, updateType: modifiedType, updateValue: modifiedValue });
+        const response = await axios.post(backendServer + '/cart/modify', { productId: product.id, updateType: modifiedType, updateValue: modifiedValue });
+        setCartData(response.data);
     }
 
     const orderProducts = async (e) => {
@@ -80,6 +81,10 @@ export default function Cart(props) {
         } else {
             toast.error('Failed to place order. Please try later!', { position: "top-center" });
         }
+    }
+
+    const handleProductClick = (id) => {
+        navigate(`/product/${id}`);
     }
 
     return (
@@ -100,7 +105,7 @@ export default function Cart(props) {
                                     <Card.Body>
                                         <Row>
                                             <Col sm={3}>
-                                                <Image rounded width={200} height={200} src={productInfo.product.photo ? productInfo.product.photo : defaultShopImage} />
+                                                <Image onClick={() => handleProductClick(productInfo.product.id)} rounded width={200} height={200} src={productInfo.product.photo ? productInfo.product.photo : defaultShopImage} />
                                             </Col>
                                             <Col sm={9}>
                                                 <Row><h3>Name: {productInfo.product.name}</h3></Row>
@@ -114,15 +119,14 @@ export default function Cart(props) {
                                                         ))}
                                                     </Form.Select>
                                                 </h5></Row>
-                                                <Row><h5><Form.Check type="checkbox" name="giftPacking" label="This order is a gift" onClick={(e) => modifyCart('gift_packing', e.target.checked, productInfo.product)} /></h5></Row>
+                                                <Row><h5><Form.Check type="checkbox" checked={productInfo.gift_packing} name="giftPacking" label="This order is a gift" onClick={(e) => modifyCart('gift_packing', e.target.checked, productInfo.product)} /></h5></Row>
 
                                                 <Row><h5>
                                                     <Form className="d-flex" onSubmit={(e) => addNoteToSeller(e, productInfo.product)}>
-                                                        <FormControl type="text" name="noteToSeller" onChange={(e) => setNoteToSeller(e.target.value, productInfo.product)} placeholder="Add a note to seller" className="me-2" aria-label="Search" />
+                                                        <Form.Control type="text" name="noteToSeller" defaultValue={productInfo.note_to_seller} onChange={(e) => setNoteToSeller(e.target.value, productInfo.product)} placeholder="Add a note to seller" className="me-2" />
                                                         <Button variant="outline-success" type="submit">Save</Button>
                                                     </Form>
                                                 </h5></Row>
-
 
                                                 <Row><h5>Total: {currencySymbol}{productInfo.product.price} * {productInfo.quantity} = {currencySymbol}{productInfo.product.price * productInfo.quantity}</h5></Row>
                                                 <Row>

@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Row, Col, Image, Card } from 'react-bootstrap';
+import { Row, Button, Col, Image, Card } from 'react-bootstrap';
 import defaultShopImage from './../images/default_shop_image.png';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -8,16 +8,49 @@ import { getCurrencySymbol, backendServer } from './util';
 export default function MyPurchases(props) {
     const [ordersInfo, setOrdersInfo] = useState();
     const [currencySymbol, setCurrencySymbol] = useState('$');
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(5);
+    const [leftFlag, setLeftFlag] = useState(false);
+    const [rightFlag, setRightFlag] = useState(true);
 
     useEffect(async () => {
         axios.defaults.withCredentials = true;
-        const { data: orders } = await axios.get(backendServer + '/orders');
+        const { data: orders } = await axios.get(backendServer + '/orders/?page=' + page + '&limit=' + limit);
         setOrdersInfo(orders);
         const userCurrency = window.localStorage.getItem("user_currency");
         if (userCurrency) {
             setCurrencySymbol(getCurrencySymbol(userCurrency));
         }
-    }, []);
+        if (page <= 1) {
+            setLeftFlag(false);
+        } else {
+            setLeftFlag(true);
+        }
+        if (orders.length < limit || orders.length === 0) {
+            setRightFlag(false);
+        } else {
+            setRightFlag(true);
+        }
+    }, [page, limit]);
+
+    const leftclick = () => {
+        if (!rightFlag) {
+            setRightFlag(true);
+        }
+        setPage(page - 1);
+    }
+
+    const rightclick = () => {
+        if (!leftFlag) {
+            setLeftFlag(true);
+        }
+        setPage(page + 1);
+    }
+
+    const setLimitFunction = (e) => {
+        setLimit(e.target.value)
+        setPage(1);
+    }
 
     const calculateOrderTotal = (order) => {
         let total = 0;
@@ -38,7 +71,29 @@ export default function MyPurchases(props) {
 
             {ordersInfo && ordersInfo.length > 0 && (
                 <>
-                    <h2 style={{ marginTop: "1%", textAlign: 'center' }}>Check your purchases below</h2>
+                    <h2 style={{ marginTop: "1%", textAlign: 'center' }}>Check your orders below</h2>
+                    <Row style={{ marginLeft: "2%", marginRight: "3%" }}>
+                        <Col style={{ fontSize: "1rem", fontWeight: "bold" }} sm={3}>Select orders per page:
+                            <select type='select' onChange={(e) => setLimitFunction(e)}>
+                                <option key={1} value={2}>{2}</option>
+                                <option key={2} selected value={5}>{5}</option>
+                                <option key={3} value={10}>{10}</option>
+                            </select> </Col>
+                        <Col sm={6}></Col>
+                        <Col>
+                            <Row>
+                                <Col></Col>
+                                <Col></Col>
+                                <Col>
+                                    <Button disabled={!leftFlag} onClick={leftclick}>Prev</Button>
+                                </Col>
+                                <Col sm={3}>Page {page}</Col>
+                                <Col>
+                                    <Button disabled={!rightFlag} onClick={rightclick}>Next</Button>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
                     {ordersInfo.map((order) => (
                         <Card style={{ marginLeft: "5%", marginRight: "5%", marginTop: 15, marginBottom: 15 }}>
                             <Card.Body>
@@ -58,7 +113,9 @@ export default function MyPurchases(props) {
                                             {ordered_product.gift_packing && (
                                                 <Row><h5>This item is ordered as a gift product</h5></Row>
                                             )}
-                                            <Row><h5>Note to seller: {ordered_product.note_to_seller}</h5></Row>
+                                            {ordered_product.note_to_seller && (
+                                                <Row><h5>Note to seller: {ordered_product.note_to_seller}</h5></Row>
+                                            )}
                                             <Row><h5>Total: {currencySymbol}{ordered_product.price} * {ordered_product.quantity} = {currencySymbol}{ordered_product.price * ordered_product.quantity}</h5></Row>
                                         </Col>
                                     </Row>

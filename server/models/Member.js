@@ -20,7 +20,10 @@ const memberSchema = new mongoose.Schema({
         enum: ['MALE', 'FEMALE', 'RATHER_NOT_SAY']
     },
     photo: String,
-    date_of_birth: Date,
+    date_of_birth: {
+        type: Date,
+        get: (date_of_birth) => date_of_birth.toLocaleDateString('en-CA')
+    },
     phone_number: String,
     address: {
         street_address: String,
@@ -47,7 +50,7 @@ const memberSchema = new mongoose.Schema({
         note_to_seller: String
     }]
 }, {
-    toJSON: { virtuals: true },
+    toJSON: { virtuals: true, getters: true },
     toObject: { virtuals: true },
     timestamps: true
 });

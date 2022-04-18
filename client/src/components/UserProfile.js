@@ -44,12 +44,14 @@ export default function UserProfile(props) {
             userProfileForm.about = member.about;
             userProfileForm.phoneNumber = member.phone_number;
             userProfileForm.email = member.email;
-            userProfileForm.streetAddress = member.address.street_address;
-            userProfileForm.aptNo = member.address.apt_no;
-            userProfileForm.city = member.address.city;
-            userProfileForm.zipCode = member.address.zipcode;
-            userProfileForm.state = member.address.state;
-            userProfileForm.country = member.address.country;
+            if (member.address) {
+                userProfileForm.streetAddress = member.address.street_address;
+                userProfileForm.aptNo = member.address.apt_no;
+                userProfileForm.city = member.address.city;
+                userProfileForm.zipCode = member.address.zipcode;
+                userProfileForm.state = member.address.state;
+                userProfileForm.country = member.address.country;
+            }
             return userProfileForm;
         });
     }, []);
@@ -70,6 +72,7 @@ export default function UserProfile(props) {
             { validateStatus: status => status < 500 });
         if (response.status === 200) {
             toast.success('User profile edited successfully!', { position: "top-center" });
+            setValidationErrors({});
         } else {
             setValidationErrors(response.data.errors);
         }

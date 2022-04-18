@@ -13,7 +13,9 @@ export default function Footer() {
         axios.defaults.withCredentials = true;
         if (isLoggedIn()) {
             const { data: member } = await axios.get(backendServer + '/member');
-            setCountry(member.address.country);
+            if (member.address) {
+                setCountry(member.address.country);
+            }
             setCurrency(member.currency);
         }
     }, []);

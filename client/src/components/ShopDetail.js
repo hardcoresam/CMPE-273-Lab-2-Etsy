@@ -25,8 +25,8 @@ export default function ShopDetail(props) {
         const { data: shopData } = await axios.get(backendServer + `/shop/${shopId}`);
         setShopData(shopData);
         let gridOfProducts = [];
-        for (let i = 0; i < shopData.products.length; i = i + 4) {
-            gridOfProducts.push(shopData.products.slice(i, i + 4));
+        for (let i = 0; i < shopData.shop.products.length; i = i + 4) {
+            gridOfProducts.push(shopData.shop.products.slice(i, i + 4));
         }
         setProductsGrid(gridOfProducts);
     }, []);

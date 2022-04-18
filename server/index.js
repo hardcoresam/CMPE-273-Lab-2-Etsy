@@ -401,14 +401,14 @@ app.post('/cart/remove', checkAuth, async (req, res) => {
 });
 
 app.post('/cart/modify', checkAuth, async (req, res) => {
-  //TODO - Figure out why the below variable is not being used.
   let updateType = 'cart.$.' + req.body.updateType;
-  const updatedCartInfo = await Member.select('cart').findOneAndUpdate({
+  const updatedCartInfo = await Member.findOneAndUpdate({
     _id: req.user.id,
     cart: { '$elemMatch': { product: req.body.productId } }
   }, {
-    $set: { updateType: req.body.updateValue }
+    $set: { [updateType]: req.body.updateValue }
   }, {
+    "fields": { "cart": 1 },
     new: true
   }).populate({
     path: 'cart.product',
@@ -474,7 +474,12 @@ app.post('/order', checkAuth, async (req, res) => {
 });
 
 app.get('/orders', checkAuth, async (req, res) => {
-  const orders = await Order.find({ member: req.user.id }).populate({
+  const { page, limit } = req.query;
+  const orders = await Order.find({ 
+    member: req.user.id
+  }, null, {
+    skip: (page - 1) * limit, limit: limit
+  }).populate({
     path: 'ordered_products.product',
     populate: 'shop'
   });

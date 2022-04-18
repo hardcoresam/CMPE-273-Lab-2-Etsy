@@ -36,7 +36,12 @@ export default function EditShopImageModal({ showModal, setShowModal, shopData, 
         if (response.status === 200) {
             toast.success('Shop Image edited successfully!', { position: "top-center" });
             setShowModal(false);
-            setShopData({ ...shopData, 'shop.photo': s3PhotoUrl });
+            setShopData((prevState) => {
+                prevState.shop.photo = s3PhotoUrl;
+                return ({
+                    ...prevState
+                })
+            });
         } else {
             toast.error('Failed to upload shop image. Please try later!', { position: "top-center" });
         }
