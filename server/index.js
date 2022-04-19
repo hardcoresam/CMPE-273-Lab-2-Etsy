@@ -475,15 +475,23 @@ app.post('/order', checkAuth, async (req, res) => {
 
 app.get('/orders', checkAuth, async (req, res) => {
   const { page, limit } = req.query;
-  const orders = await Order.find({ 
+  let orders = await Order.find({
     member: req.user.id
-  }, null, {
-    skip: (page - 1) * limit, limit: limit
   }).populate({
     path: 'ordered_products.product',
     populate: 'shop'
   });
-  return res.status(200).json(orders);
+
+  const totalOrdersCount = orders.length;
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+  orders = orders.slice(startIndex, endIndex);
+
+  const result = {
+    orders: orders,
+    totalOrdersCount: totalOrdersCount
+  }
+  return res.status(200).json(result);
 });
 
 app.listen(4000, () => console.log('Server listening on port 4000'));

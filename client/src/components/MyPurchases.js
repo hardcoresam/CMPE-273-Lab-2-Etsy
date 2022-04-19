@@ -16,7 +16,7 @@ export default function MyPurchases(props) {
     useEffect(async () => {
         axios.defaults.withCredentials = true;
         const { data: orders } = await axios.get(backendServer + '/orders/?page=' + page + '&limit=' + limit);
-        setOrdersInfo(orders);
+        setOrdersInfo(orders.orders);
         const userCurrency = window.localStorage.getItem("user_currency");
         if (userCurrency) {
             setCurrencySymbol(getCurrencySymbol(userCurrency));
@@ -26,7 +26,7 @@ export default function MyPurchases(props) {
         } else {
             setLeftFlag(true);
         }
-        if (orders.length < limit || orders.length === 0) {
+        if (orders.totalOrdersCount == page * limit || orders.orders.length < limit || orders.orders.length === 0) {
             setRightFlag(false);
         } else {
             setRightFlag(true);
