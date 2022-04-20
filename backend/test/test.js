@@ -39,7 +39,7 @@ describe('Authenticating Backend Apis', () => {
     describe('/GET products', () => {
         it('it should return all products', (done) => {
             chai.request(server)
-                .get('/products')
+                .get('/product/all')
                 .set('cookie', 'access-token=' + jwtToken)
                 .end((err, res) => {
                     res.should.have.status(200);

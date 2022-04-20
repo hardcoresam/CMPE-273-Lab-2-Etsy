@@ -16,7 +16,7 @@ export default function Home(props) {
             axios.defaults.withCredentials = true;
             const { data: member } = await axios.get(backendServer + '/member');
             setMember(member);
-            const { data: products } = await axios.get(backendServer + '/products');
+            const { data: products } = await axios.get(backendServer + '/product/all');
             let gridOfProducts = [];
             for (let i = 0; i < products.length; i = i + 4) {
                 gridOfProducts.push(products.slice(i, i + 4));

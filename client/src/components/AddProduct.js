@@ -58,7 +58,7 @@ export default function AddProduct({ showModal, setShowModal, shopId }) {
 
     useEffect(async () => {
         axios.defaults.withCredentials = true;
-        const { data: categories } = await axios.get(backendServer + '/categories');
+        const { data: categories } = await axios.get(backendServer + '/category/all');
         setCategories(categories);
         //setting the first category value which we will show in the UI to the form 
         setAddProductForm({ ...addProductForm, category: categories[0].id });

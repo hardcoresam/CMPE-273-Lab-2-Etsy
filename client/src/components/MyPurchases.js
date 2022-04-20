@@ -15,7 +15,7 @@ export default function MyPurchases(props) {
 
     useEffect(async () => {
         axios.defaults.withCredentials = true;
-        const { data: orders } = await axios.get(backendServer + '/orders/?page=' + page + '&limit=' + limit);
+        const { data: orders } = await axios.get(backendServer + '/order/all/?page=' + page + '&limit=' + limit);
         setOrdersInfo(orders.orders);
         const userCurrency = window.localStorage.getItem("user_currency");
         if (userCurrency) {

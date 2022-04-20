@@ -15,7 +15,7 @@ export default function MyFavourites(props) {
 
     useEffect(async () => {
         axios.defaults.withCredentials = true;
-        const { data } = await axios.get(backendServer + '/favourites-of-member');
+        const { data } = await axios.get(backendServer + '/favourite/for-member');
         setMemberInfo({
             photo: data.photo,
             userName: data.first_name

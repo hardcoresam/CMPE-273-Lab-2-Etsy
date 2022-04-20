@@ -60,7 +60,7 @@ export default function EditProduct({ showModal, setShowModal, productId }) {
 
     useEffect(async () => {
         axios.defaults.withCredentials = true;
-        const { data: categories } = await axios.get(backendServer + '/categories');
+        const { data: categories } = await axios.get(backendServer + '/category/all');
         setCategories(categories);
         const { data: productData } = await axios.get(backendServer + `/product/${productId}`);
         setEditProductForm(prevState => {

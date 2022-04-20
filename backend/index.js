@@ -149,7 +149,7 @@ app.post('/category', checkAuth, async (req, res) => {
   return res.status(200).json(category);
 });
 
-app.get('/categories', checkAuth, async (req, res) => {
+app.get('/category/all', checkAuth, async (req, res) => {
   const categories = await Category.find({}).sort('_id');
   return res.status(200).json(categories);
 });
@@ -273,12 +273,12 @@ app.get('/product/:productId', checkAuth, async (req, res) => {
   return res.status(200).json(result);
 });
 
-app.get('/products', checkAuth, async (req, res) => {
+app.get('/product/all', checkAuth, async (req, res) => {
   const products = await Product.find({});
   return res.status(200).json(products);
 });
 
-app.post('/products/filtered', checkAuth, async (req, res) => {
+app.post('/product/filtered', checkAuth, async (req, res) => {
   let searchText = '.*' + req.body.searchedText + '.*';
   let findConditions = {
     name: {
@@ -311,7 +311,7 @@ app.post('/products/filtered', checkAuth, async (req, res) => {
   return res.status(200).json(filteredProducts);
 });
 
-app.get('/favourites', checkAuth, async (req, res) => {
+app.get('/favourite/all', checkAuth, async (req, res) => {
   const memberInfo = await Member.findById(req.user.id, 'favouriteProducts');
   return res.status(200).json(memberInfo.favouriteProducts);
 });
@@ -331,7 +331,7 @@ app.post('/favourite', checkAuth, async (req, res) => {
   return res.status(200).json(updatedMemberInfo.favouriteProducts);
 });
 
-app.get('/favourites-of-member', checkAuth, async (req, res) => {
+app.get('/favourite/for-member', checkAuth, async (req, res) => {
   const favouritesInfo = await Member.findById(req.user.id, 'photo first_name favouriteProducts').populate('favouriteProducts');
   return res.status(200).json(favouritesInfo);
 });
@@ -473,7 +473,7 @@ app.post('/order', checkAuth, async (req, res) => {
   return res.status(200).json({ message: "Order placed successfully" });
 });
 
-app.get('/orders', checkAuth, async (req, res) => {
+app.get('/order/all', checkAuth, async (req, res) => {
   const { page, limit } = req.query;
   let orders = await Order.find({
     member: req.user.id

@@ -18,7 +18,7 @@ export default function Search(props) {
     useEffect(async () => {
         setSearchedText(searchParams.get('text').replace(/%20/g, " "));
         axios.defaults.withCredentials = true;
-        const { data: products } = await axios.post(backendServer + '/products/filtered', {
+        const { data: products } = await axios.post(backendServer + '/product/filtered', {
             sortBy: sortBy,
             excludeOutOfStock: excludeOutOfStock,
             minPrice: searchForm.minPrice,

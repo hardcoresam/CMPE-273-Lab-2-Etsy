@@ -22,7 +22,7 @@ export default function AddCategory({ showModal, setShowModal }) {
 
     useEffect(async () => {
         axios.defaults.withCredentials = true;
-        const { data: categories } = await axios.get(backendServer + '/categories');
+        const { data: categories } = await axios.get(backendServer + '/category/all');
         setCategories(categories);
     }, []);
 

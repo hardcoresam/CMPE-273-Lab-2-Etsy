@@ -15,7 +15,7 @@ export default function ProductList({ productsGrid, showEditButton }) {
 
     useEffect(async () => {
         axios.defaults.withCredentials = true;
-        const { data: favourites } = await axios.get(backendServer + '/favourites');
+        const { data: favourites } = await axios.get(backendServer + '/favourite/all');
         setFavourites(favourites);
         const userCurrency = window.localStorage.getItem("user_currency");
         if (userCurrency) {
