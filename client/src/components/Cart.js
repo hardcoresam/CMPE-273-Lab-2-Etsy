@@ -76,10 +76,8 @@ export default function Cart(props) {
         if (response.status === 200) {
             toast.success('Order placed successfully!', { position: "top-center" });
             navigate("/orders");
-        } else if (response.status === 401) {
-            toast.error(response.data.error, { position: "top-center" });
         } else {
-            toast.error('Failed to place order. Please try later!', { position: "top-center" });
+            toast.error(response.data.error, { position: "top-center" });
         }
     }
 

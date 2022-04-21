@@ -1,0 +1,10 @@
+# dependencies
+/node_modules
+
+# es lint configuration
+/.eslintrc.js
+
+# env variables
+/.env
+
+/requests.rest

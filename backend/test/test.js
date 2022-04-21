@@ -5,6 +5,7 @@ chai.use(chaiHttp);
 const server = require('./../index');
 const { Category } = require("./../models");
 
+//TODO - Should this file and test this since kafka is integrated now
 describe('Authenticating Backend Apis', () => {
     let jwtToken = null;
 

@@ -1,0 +1,11 @@
+{
+    "AUTH_TOPIC": "etsyauth",
+    "CART_TOPIC": "etsycart",
+    "CATEGORY_TOPIC": "etsycategory",
+    "FAVOURITE_TOPIC": "etsyfavourite",
+    "MEMBER_TOPIC": "etsymember",
+    "ORDER_TOPIC": "etsyorder",
+    "PRODUCT_TOPIC": "etsyproduct",
+    "SHOP_TOPIC": "etsyshop",
+    "ACKNOWLEDGE_TOPIC": "etsyacknowledge"
+}
