@@ -5,13 +5,21 @@ import { useNavigate } from 'react-router-dom';
 import defaultShopImage from './../images/default_shop_image.png';
 import EditProduct from './EditProduct';
 import { getCurrencySymbol, backendServer } from './util';
+import { useSelector } from 'react-redux'
+import { favstateReducer } from '../features/productSlice';
+import { useDispatch } from "react-redux";
 
-export default function ProductList({ productsGrid, showEditButton }) {
+export default function ProductList({ showEditButton }) {
     const [showEditProductModal, setShowEditProductModal] = useState(false);
     const [toEditProductId, setToEditProductId] = useState();
     const [favourites, setFavourites] = useState([]);
     const [currencySymbol, setCurrencySymbol] = useState('$');
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const obj = useSelector(state => state.products);
+    const { statestatus } = obj.value;
+    const obj3 = useSelector(state => state.products);
+    const { flag } = obj3.value;
 
     useEffect(async () => {
         axios.defaults.withCredentials = true;
@@ -32,6 +40,7 @@ export default function ProductList({ productsGrid, showEditButton }) {
         axios.defaults.withCredentials = true;
         const { data: favourites } = await axios.post(backendServer + '/favourite', { productId: product.id });
         setFavourites(favourites);
+        dispatch(favstateReducer(!flag));
     }
 
     const handleProductClick = (product) => {
@@ -40,7 +49,7 @@ export default function ProductList({ productsGrid, showEditButton }) {
 
     return (
         <Fragment>
-            {productsGrid && productsGrid.map((products) => (
+            {statestatus && statestatus.map((products) => (
                 <Row style={{ marginLeft: "2%", marginRight: "2%", marginTop: "1%", marginBottom: "1%" }}>
                     {products.map((product) => (
                         <Card className="ms-2" style={{ width: '18rem' }}>

@@ -3,6 +3,8 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { backendServer } from './util';
+import { useDispatch } from "react-redux";
+import { registerPending, registerSuccess, registerFail } from '../features/registerSlice';
 
 export default function Register({ showModal, setShowModal }) {
     const [registerForm, setRegisterForm] = useState({
@@ -12,6 +14,7 @@ export default function Register({ showModal, setShowModal }) {
     });
     const [validationErrors, setValidationErrors] = useState({});
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleFormDataChange = (event) => {
         setRegisterForm({ ...registerForm, [event.target.name]: event.target.value });
@@ -20,14 +23,17 @@ export default function Register({ showModal, setShowModal }) {
     const handleSubmit = async (event) => {
         event.preventDefault();
         axios.defaults.withCredentials = true;
+        dispatch(registerPending());
         const response = await axios.post(backendServer + '/auth/register', { ...registerForm },
             { validateStatus: status => status < 500 });
         if (response.status === 200) {
+            dispatch(registerSuccess());
             setShowModal(false);
             window.localStorage.setItem("user_currency", response.data.newMember.currency);
             navigate("/home");
             window.location.reload();
         } else {
+            dispatch(registerFail(response.data.errors));
             setValidationErrors(response.data.errors);
         }
     }

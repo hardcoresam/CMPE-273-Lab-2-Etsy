@@ -1,8 +1,10 @@
 import React, { Fragment, useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap'
+import { Modal, Button, Form, Alert, Spinner } from 'react-bootstrap'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { backendServer } from './util';
+import { loginFail, loginSuccess, loginPending } from "../features/loginSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Signin({ showModal, setShowModal }) {
     const [signinForm, setSigninForm] = useState({
@@ -11,6 +13,9 @@ export default function Signin({ showModal, setShowModal }) {
     });
     const [validationErrors, setValidationErrors] = useState({});
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const obj = useSelector(state => state.login);
+    const { isLoading } = obj.value;
 
     const handleFormDataChange = (event) => {
         setSigninForm({ ...signinForm, [event.target.name]: event.target.value });
@@ -19,14 +24,17 @@ export default function Signin({ showModal, setShowModal }) {
     const handleSubmit = async (event) => {
         event.preventDefault();
         axios.defaults.withCredentials = true;
+        dispatch(loginPending());
         const response = await axios.post(backendServer + '/auth/login', { ...signinForm },
             { validateStatus: status => status < 500 });
         if (response.status === 200) {
+            dispatch(loginSuccess());
             setShowModal(false);
             window.localStorage.setItem("user_currency", response.data.member.currency);
             navigate("/home");
             window.location.reload();
         } else {
+            dispatch(loginFail(response.data.errors));
             setValidationErrors(response.data.errors);
         }
     }
@@ -61,6 +69,7 @@ export default function Signin({ showModal, setShowModal }) {
                         </Form.Group>
                         <Button variant="primary" type="submit" className="rounded-pill">Sign in</Button>
                     </Form>
+                    {isLoading && <Spinner variant="primary" animation="border" />}
                 </Modal.Body>
             </Modal>
         </Fragment>

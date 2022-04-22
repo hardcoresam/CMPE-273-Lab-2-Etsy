@@ -4,11 +4,13 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import ProductList from './ProductList';
 import { isLoggedIn, backendServer } from './util';
+import { useDispatch } from "react-redux";
+import { stateReducer } from '../features/productSlice';
 
 export default function Home(props) {
-    const [productsGrid, setProductsGrid] = useState([]);
     const [member, setMember] = useState({ first_name: '' });
     const [loggedIn, setLoggedIn] = useState(false);
+    const dispatch = useDispatch();
 
     useEffect(async () => {
         setLoggedIn(isLoggedIn());
@@ -21,7 +23,7 @@ export default function Home(props) {
             for (let i = 0; i < products.length; i = i + 4) {
                 gridOfProducts.push(products.slice(i, i + 4));
             }
-            setProductsGrid(gridOfProducts);
+            dispatch(stateReducer(gridOfProducts))
         }
     }, []);
 
@@ -58,7 +60,7 @@ export default function Home(props) {
             </Card>
 
             {loggedIn && (
-                <ProductList productsGrid={productsGrid} showEditButton={false} />
+                <ProductList showEditButton={false} />
             )}
         </Fragment>
     );

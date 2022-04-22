@@ -5,13 +5,18 @@ import defaultProfilePhoto from './../images/default_profile_photo.png';
 import { useNavigate } from 'react-router-dom';
 import ProductList from './ProductList';
 import { backendServer } from './util';
+import { useDispatch } from "react-redux";
+import { useSelector } from 'react-redux';
+import { stateReducer } from '../features/productSlice';
 
 export default function MyFavourites(props) {
     const [productsList, setProductsList] = useState([]);
-    const [productsGrid, setProductsGrid] = useState([]);
     const [searchedText, setSearchedText] = useState();
     const [memberInfo, setMemberInfo] = useState();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const obj = useSelector(state => state.products);
+    const { flag } = obj.value;
 
     useEffect(async () => {
         axios.defaults.withCredentials = true;
@@ -29,8 +34,8 @@ export default function MyFavourites(props) {
         for (let i = 0; i < setOfProducts.length; i = i + 4) {
             gridOfProducts.push(setOfProducts.slice(i, i + 4));
         }
-        setProductsGrid(gridOfProducts);
-    }, []);
+        dispatch(stateReducer(gridOfProducts));
+    }, [flag]);
 
     const handleEditUserClick = (event) => {
         navigate("/user-profile");
@@ -48,7 +53,7 @@ export default function MyFavourites(props) {
         for (let i = 0; i < setOfProducts.length; i = i + 4) {
             gridOfProducts.push(setOfProducts.slice(i, i + 4));
         }
-        setProductsGrid(gridOfProducts);
+        dispatch(stateReducer(gridOfProducts))
     }
 
     return (
@@ -85,7 +90,7 @@ export default function MyFavourites(props) {
                         </Card.Body>
                     </Card>
 
-                    <ProductList productsGrid={productsGrid} showEditButton={false} />
+                    <ProductList showEditButton={false} />
                 </>
             )}
         </Fragment>

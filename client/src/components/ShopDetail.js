@@ -9,16 +9,17 @@ import AddCategory from './AddCategory';
 import ProductList from './ProductList';
 import EditShopImageModal from './EditShopImageModal';
 import { backendServer } from './util';
+import { useDispatch } from "react-redux";
+import { stateReducer } from '../features/productSlice';
 
 export default function ShopDetail(props) {
-
     const params = useParams();
     const [shopId, setShopId] = useState(params.shopId);
     const [shopData, setShopData] = useState();
     const [showAddProductModal, setShowAddProductModal] = useState(false);
     const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
     const [showEditShopImageModal, setShowEditShopImageModal] = useState(false);
-    const [productsGrid, setProductsGrid] = useState([]);
+    const dispatch = useDispatch();
 
     useEffect(async () => {
         axios.defaults.withCredentials = true;
@@ -28,7 +29,7 @@ export default function ShopDetail(props) {
         for (let i = 0; i < shopData.shop.products.length; i = i + 4) {
             gridOfProducts.push(shopData.shop.products.slice(i, i + 4));
         }
-        setProductsGrid(gridOfProducts);
+        dispatch(stateReducer(gridOfProducts))
     }, []);
 
     return (
@@ -67,7 +68,7 @@ export default function ShopDetail(props) {
                         </Card.Body>
                     </Card>
 
-                    <ProductList productsGrid={productsGrid} showEditButton={shopData.is_owner} />
+                    <ProductList showEditButton={shopData.is_owner} />
 
                     {showAddProductModal && (
                         <AddProduct showModal={showAddProductModal} setShowModal={setShowAddProductModal} shopId={shopData.shop.id} />

@@ -6,6 +6,7 @@ import Register from './Register';
 import Signin from './Signin';
 import { isLoggedIn } from './util';
 import { toast } from 'react-toastify';
+import { useDispatch } from "react-redux";
 
 export default function NavBar(props) {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -14,14 +15,17 @@ export default function NavBar(props) {
     const [searchedText, setSearchedText] = useState();
     const location = useLocation();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     useEffect(() => {
         setLoggedIn(isLoggedIn());
     }, [location]);
 
     const handleLogout = (event) => {
+        dispatch(logoutPending());
         cookie.remove('access-token', { path: '/' });
         setLoggedIn(false);
+        dispatch(logoutSuccess());
         toast.success('Logged out successfully!', { position: "top-center" });
         navigate("/");
         window.location.reload();
