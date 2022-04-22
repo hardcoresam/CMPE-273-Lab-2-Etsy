@@ -10,7 +10,7 @@ exports.registerUser = async (req, res) => {
     }
     kafka.sendKafkaRequest(kafkaTopics.AUTH_TOPIC, { ...req.body, action: actions.REGISTER_USER }, (err, data) => {
         if (err) return res.status(400).json(err)
-        //res.cookie('access-token', data.token, { maxAge: 9000000, httpOnly: false });
+        res.cookie('access-token', data.token, { maxAge: 9000000, httpOnly: false });
         return res.json(data)
     })
 }

@@ -24,7 +24,7 @@ export default function Register({ showModal, setShowModal }) {
             { validateStatus: status => status < 500 });
         if (response.status === 200) {
             setShowModal(false);
-            window.localStorage.setItem("user_currency", response.data.currency);
+            window.localStorage.setItem("user_currency", response.data.newMember.currency);
             navigate("/home");
             window.location.reload();
         } else {

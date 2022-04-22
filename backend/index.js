@@ -14,18 +14,18 @@ const mongoDbUrl = "mongodb+srv://admin:passwordmongodb@cluster0.ssvve.mongodb.n
 const mongoose = require('mongoose');
 
 var options = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  maxPoolSize: 50
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    maxPoolSize: 50
 };
 
 mongoose.connect(mongoDbUrl, options, (err, res) => {
-  if (err) {
-    console.log(err);
-    console.log(`MongoDB Connection Failed`);
-  } else {
-    console.log(`MongoDB Connected`);
-  }
+    if (err) {
+        console.log(err);
+        console.log(`MongoDB Connection Failed`);
+    } else {
+        console.log(`MongoDB Connected`);
+    }
 });
 
 const kafkaConection = require('./kafka/KafkaConnect');
@@ -56,9 +56,7 @@ function handleTopicRequest(topic_name, serviceObject) {
                     console.log("Service failed with Error: ", err);
                     payload.status = 400;
                     payload.content = err;
-                }
-
-                if (res) {
+                } else {
                     payload.status = 200;
                     payload.content = res;
                 }

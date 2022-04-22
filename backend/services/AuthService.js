@@ -33,10 +33,10 @@ const registerUser = async (payload, callback) => {
     jwt.sign(jwtPayload, process.env.JWT_SECRET_KEY, (err, token) => {
         if (err) {
             console.error(err);
-            return callback({ message: 'Server error' });
+            return callback({ message: 'Server error' }, null);
         }
         //res.cookie('access-token', token, { maxAge: 900000, httpOnly: false, path: '/' });
-        return callback(null, newMember);
+        return callback(null, { newMember: newMember, token: token });
     });
 }
 
