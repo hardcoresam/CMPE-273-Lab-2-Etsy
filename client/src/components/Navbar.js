@@ -7,6 +7,7 @@ import Signin from './Signin';
 import { isLoggedIn } from './util';
 import { toast } from 'react-toastify';
 import { useDispatch } from "react-redux";
+import { logoutPending, logoutSuccess } from "../features/logoutSlice";
 
 export default function NavBar(props) {
     const [loggedIn, setLoggedIn] = useState(false);

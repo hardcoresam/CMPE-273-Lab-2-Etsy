@@ -22,7 +22,12 @@ const memberSchema = new mongoose.Schema({
     photo: String,
     date_of_birth: {
         type: Date,
-        get: (date_of_birth) => date_of_birth.toLocaleDateString('en-CA')
+        get: (date_of_birth) => {
+            if (date_of_birth) {
+                return date_of_birth.toLocaleDateString('en-CA');
+            }
+            return date_of_birth;
+        }
     },
     phone_number: String,
     address: {
