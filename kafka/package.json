@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "test": "mocha --timeout 20000",
+    "start": "nodemon run index.js"
   },
   "author": "Sai Krishna",
   "license": "ISC",
@@ -22,7 +22,10 @@
     "passport-jwt": "^4.0.0"
   },
   "devDependencies": {
+    "chai": "^4.3.6",
+    "chai-http": "^4.3.0",
     "eslint": "^8.10.0",
-    "eslint-config-airbnb": "^19.0.4"
+    "eslint-config-airbnb": "^19.0.4",
+    "mocha": "^9.2.2"
   }
 }

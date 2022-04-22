@@ -45,3 +45,5 @@ app.use('/cart', require('./routes/CartRoute'));
 app.use('/order', require('./routes/OrderRoute'));
 
 app.listen(PORT, () => console.log('Kafka Service listening on port - ', PORT));
+
+module.exports = app;

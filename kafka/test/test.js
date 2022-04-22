@@ -2,10 +2,8 @@ const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
-const server = require('./../index');
-const { Category } = require("./../models");
+const server = require('../index');
 
-//TODO - Should this file and test this since kafka is integrated now
 describe('Authenticating Backend Apis', () => {
     let jwtToken = null;
 
@@ -80,24 +78,19 @@ describe('Authenticating Backend Apis', () => {
     })
 
     describe('/POST category', () => {
-        let newCategoryId = null;
+        let randomCategoryName = (Math.random() + 1).toString(36).substring(7);
 
         it('it should create a new category', (done) => {
             chai.request(server)
                 .post('/category')
                 .set('cookie', 'access-token=' + jwtToken)
-                .send({ categoryName: 'testcategory' })
+                .send({ categoryName: randomCategoryName })
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('id');
-                    newCategoryId = res.body.id;
                     done();
                 });
-        });
-
-        after(async () => {
-            await Category.destroy({ where: { id: newCategoryId } });
         });
     })
 });

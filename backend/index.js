@@ -88,5 +88,3 @@ handleTopicRequest(kafkaTopics.PRODUCT_TOPIC, ProductService);
 handleTopicRequest(kafkaTopics.SHOP_TOPIC, ShopService);
 
 app.listen(8585, () => console.log('Backend Service listening on port 8585'));
-
-module.exports = app;
