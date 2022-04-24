@@ -40,7 +40,7 @@ export function isLoggedIn() {
     return cookie.load('access-token');
 };
 
-export const backendServer = "http://localhost:4000";
+export const backendServer = "http://54.215.56.237:4000";
 
 export function getCurrencySymbol(currency) {
     let currencySymbol = "";
