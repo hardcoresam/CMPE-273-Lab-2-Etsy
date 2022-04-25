@@ -2,7 +2,7 @@ const kafka = require('kafka-node')
 const latestoffset = require('./latest-offset')
 
 exports.getProducer = () => {
-    var client = new kafka.KafkaClient("localhost:2181");
+    var client = new kafka.KafkaClient("54.183.218.17:2181");
     var HighlevelProducer = kafka.HighLevelProducer;
     return new HighlevelProducer(client)
 }
@@ -12,7 +12,7 @@ exports.getConsumer = (topicName, results) => {
     latestoffset.getlatestOffset(topicName, function (returnValue) {
         lOffset = returnValue
 
-        var client = new kafka.KafkaClient("localhost:2181")
+        var client = new kafka.KafkaClient("54.183.218.17:2181")
         var Consumer = kafka.Consumer
 
         var options = {

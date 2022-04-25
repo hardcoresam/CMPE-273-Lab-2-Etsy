@@ -1,7 +1,7 @@
 var kafka = require('kafka-node')
 
 exports.getlatestOffset = (topicName, cb) => {
-    var client = new kafka.KafkaClient("localhost:2181")
+    var client = new kafka.KafkaClient("54.183.218.17:2181")
 
     var offset = new kafka.Offset(client)
     var latestOffset;

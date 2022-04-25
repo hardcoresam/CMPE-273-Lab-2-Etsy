@@ -12,7 +12,7 @@ require('./config/passport')(passport)
 
 const PORT = process.env.PORT || 4000
 
-const frontendUrl = "http://54.215.56.237:3000";
+const frontendUrl = "http://54.183.218.17:3000";
 
 //use cors to allow cross origin resource sharing
 app.use(cors({ origin: frontendUrl, credentials: true }));
