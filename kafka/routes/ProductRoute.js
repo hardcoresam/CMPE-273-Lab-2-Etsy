@@ -8,9 +8,9 @@ const checkAuth = passport.authenticate("jwt", { session: false });
 router.use(checkAuth);
 
 router.post('/', Validation.addProductValidation(), ProductController.createProduct);
+router.post('/filtered', ProductController.filterProducts);
 router.post('/:productId', Validation.addProductValidation(), ProductController.editProduct);
 router.get('/all', ProductController.getAllProducts);
 router.get('/:productId', ProductController.getProductById);
-router.post('/filtered', ProductController.filterProducts);
 
 module.exports = router

@@ -1,5 +1,6 @@
 const Member = require("../models/Member");
 const Order = require("../models/Order");
+const Product = require("../models/Product");
 const actions = require('../../util/kafkaActions.json')
 
 exports.handle_request = (payload, callback) => {

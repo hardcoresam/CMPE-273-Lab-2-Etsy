@@ -4,6 +4,8 @@ import axios from 'axios';
 import ProductList from './ProductList';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { backendServer } from './util';
+import { useDispatch } from "react-redux";
+import { stateReducer } from '../features/productSlice';
 
 export default function Search(props) {
     const [searchedText, setSearchedText] = useState();
@@ -12,8 +14,8 @@ export default function Search(props) {
     const [sortBy, setSortBy] = useState('price');
     const [priceFilterClicked, setPriceFilterClicked] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
-    const [productsGrid, setProductsGrid] = useState([]);
     const location = useLocation();
+    const dispatch = useDispatch();
 
     useEffect(async () => {
         setSearchedText(searchParams.get('text').replace(/%20/g, " "));
@@ -29,7 +31,7 @@ export default function Search(props) {
         for (let i = 0; i < products.length; i = i + 4) {
             gridOfProducts.push(products.slice(i, i + 4));
         }
-        setProductsGrid(gridOfProducts);
+        dispatch(stateReducer(gridOfProducts));
     }, [location, priceFilterClicked, excludeOutOfStock, sortBy]);
 
     const handleFormDataChange = (event) => {
@@ -80,7 +82,7 @@ export default function Search(props) {
             </Row>
             <hr />
 
-            <ProductList productsGrid={productsGrid} showEditButton={false} />
+            <ProductList showEditButton={false} />
         </Fragment >
     );
 }
